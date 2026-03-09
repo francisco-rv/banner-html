@@ -1,28 +1,33 @@
 @charset "UTF-8";
-/* CSS Document */
 
-.container-fluid {
-	background: #222;
-	color:white;
-	padding: 20px;
-    text-align: center;
-    height: 150px;
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e3f2fd, #f8fafc);
+  color: #1f2937;
 }
 
-.col-xl-4 {
-  border: 1px solid #eee;
-  padding: 20px;
-  border-radius: 10px;
-  background: lightgray;
-	
+.weather-app {
+  max-width: 980px;
 }
 
-.jumbotron {
-	background-color: lightblue;
-} 
+.app-card {
+  border: 0;
+  border-radius: 1rem;
+  background: #ffffff;
+}
 
+.status {
+  min-height: 1.5rem;
+  font-weight: 600;
+  color: #0f4c81;
+}
 
+.forecast-card {
+  border-radius: 0.85rem;
+  background: #f8fbff;
+  border: 1px solid #d7e7f7;
+}
 
-
-
-
+.forecast-card hr {
+  margin: 0.8rem 0;
+}
