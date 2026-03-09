@@ -1,29 +1,225 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
-    <meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bandcamp - Así es....</title>
-    <!-- Bootstrap -->
-	<link href="css/bootstrap-4.4.1.css" rel="stylesheet">
-	<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Outfit por Pronóstico (3 días)</title>
+    <link href="css/bootstrap-4.4.1.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-  	<!-- body code goes here -->
-    <div class="jumbotron">
-      <h1 class="display-4">Bandcamp 2</h1>
-      <p class="lead">Accede a millones de canciones sin apoyar a la industria belica directamente.&nbsp;</p>
-		<img src="images/Bandcamp_logo.png" width="150px" alt="">
-      <hr class="my-4">
-      <h2>Los fanáticos les pagaron a los artistas 1,62 mil millones de dólares mediante Bandcamp y, solamente ayer, compraron 78,852 discos.</h2>
-      <p class="lead"> <a class="btn btn-primary btn-lg" href="https://bandcamp.com/" target="new" role="button">Entra ahora</a> </p>
-  </div>
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> 
-	<script src="js/jquery-3.4.1.min.js"></script>
+    <main class="weather-app container py-4 py-md-5">
+      <section class="hero text-center mb-4">
+        <h1 class="display-4">¿Qué me pongo esta semana?</h1>
+        <p class="lead mb-0">
+          Escribe tu ciudad y te sugerimos combinaciones de ropa para los próximos 3 días según el clima.
+        </p>
+      </section>
 
-	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="js/popper.min.js"></script> 
-  <script src="js/bootstrap-4.4.1.js"></script>
+      <section class="card app-card shadow-sm p-4">
+        <form id="weather-form" class="form-row align-items-end">
+          <div class="col-md-8 mb-3 mb-md-0">
+            <label for="city" class="font-weight-bold">Ciudad</label>
+            <input
+              id="city"
+              name="city"
+              type="text"
+              class="form-control form-control-lg"
+              placeholder="Ejemplo: Santiago, Bogotá, Madrid"
+              required
+            />
+          </div>
+          <div class="col-md-4">
+            <button id="submit-button" type="submit" class="btn btn-primary btn-lg btn-block">
+              Ver sugerencias
+            </button>
+          </div>
+        </form>
+
+        <p id="status" class="status mt-3" aria-live="polite"></p>
+
+        <div id="results" class="row mt-2"></div>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById('weather-form');
+      const cityInput = document.getElementById('city');
+      const statusEl = document.getElementById('status');
+      const resultsEl = document.getElementById('results');
+      const submitButton = document.getElementById('submit-button');
+
+      const WEATHER_CODES = {
+        clear: [0, 1],
+        cloudy: [2, 3, 45, 48],
+        rain: [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82],
+        storm: [95, 96, 99],
+        snow: [71, 73, 75, 77, 85, 86]
+      };
+
+      function getWeatherType(code) {
+        if (WEATHER_CODES.storm.includes(code)) return 'tormenta';
+        if (WEATHER_CODES.snow.includes(code)) return 'nieve';
+        if (WEATHER_CODES.rain.includes(code)) return 'lluvia';
+        if (WEATHER_CODES.cloudy.includes(code)) return 'nublado';
+        return 'despejado';
+      }
+
+      function getOutfitSuggestion(day) {
+        const weatherType = getWeatherType(day.weathercode);
+        const avgTemp = (day.temperature_2m_max + day.temperature_2m_min) / 2;
+        const wind = day.windspeed_10m_max;
+
+        let top = 'camiseta transpirable';
+        let outer = 'chaqueta ligera';
+        let bottom = 'jeans o pantalón cómodo';
+        let shoes = 'zapatillas';
+        let extras = [];
+
+        if (avgTemp >= 30) {
+          top = 'camiseta sin mangas o de manga corta';
+          outer = 'sin abrigo o sobrecamisa muy ligera';
+          bottom = 'short o falda fresca';
+          shoes = 'sandalias o zapatillas ventiladas';
+          extras.push('protector solar');
+        } else if (avgTemp >= 22) {
+          top = 'camiseta de manga corta';
+          outer = 'sobrecamisa fina';
+          bottom = 'pantalón ligero o falda';
+        } else if (avgTemp >= 14) {
+          top = 'camiseta + capa fina';
+          outer = 'chaqueta liviana';
+          bottom = 'pantalón largo';
+        } else if (avgTemp >= 6) {
+          top = 'camiseta térmica o suéter';
+          outer = 'abrigo medio';
+          bottom = 'pantalón grueso';
+          shoes = 'botines cerrados';
+        } else {
+          top = 'primera capa térmica';
+          outer = 'abrigo grueso';
+          bottom = 'pantalón térmico';
+          shoes = 'botas';
+          extras.push('guantes y bufanda');
+        }
+
+        if (weatherType === 'lluvia') {
+          outer = 'chaqueta impermeable';
+          shoes = 'calzado impermeable';
+          extras.push('paraguas');
+        }
+
+        if (weatherType === 'tormenta') {
+          outer = 'impermeable con capucha';
+          shoes = 'botas de lluvia';
+          extras.push('evitar ropa muy clara');
+        }
+
+        if (weatherType === 'nieve') {
+          outer = 'abrigo térmico impermeable';
+          shoes = 'botas térmicas';
+          extras.push('gorro y guantes');
+        }
+
+        if (wind > 35) {
+          extras.push('cortavientos');
+        }
+
+        return {
+          weatherType,
+          text: `${top}, ${outer}, ${bottom} y ${shoes}.`,
+          extras: extras.length ? extras.join(', ') : 'ninguno'
+        };
+      }
+
+      function dayName(dateString) {
+        return new Date(dateString).toLocaleDateString('es-ES', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'short'
+        });
+      }
+
+      function renderCards(cityLabel, daily) {
+        resultsEl.innerHTML = '';
+
+        daily.time.forEach((date, index) => {
+          const dayData = {
+            weathercode: daily.weathercode[index],
+            temperature_2m_max: daily.temperature_2m_max[index],
+            temperature_2m_min: daily.temperature_2m_min[index],
+            windspeed_10m_max: daily.windspeed_10m_max[index]
+          };
+
+          const suggestion = getOutfitSuggestion(dayData);
+
+          const col = document.createElement('article');
+          col.className = 'col-md-4 mt-3';
+          col.innerHTML = `
+            <div class="forecast-card h-100 p-3">
+              <h3 class="h5 text-capitalize">${dayName(date)}</h3>
+              <p class="mb-2"><strong>${cityLabel}</strong></p>
+              <p class="mb-1">🌡️ ${dayData.temperature_2m_min.toFixed(0)}° / ${dayData.temperature_2m_max.toFixed(0)}°C</p>
+              <p class="mb-1">🌦️ ${suggestion.weatherType}</p>
+              <p class="mb-1">💨 Viento máx: ${dayData.windspeed_10m_max.toFixed(0)} km/h</p>
+              <hr>
+              <p class="mb-2"><strong>Combinación sugerida:</strong><br>${suggestion.text}</p>
+              <p class="mb-0"><strong>Extra:</strong> ${suggestion.extras}</p>
+            </div>
+          `;
+
+          resultsEl.appendChild(col);
+        });
+      }
+
+      async function getCoordinates(city) {
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=es&format=json`;
+        const geoRes = await fetch(geoUrl);
+        if (!geoRes.ok) throw new Error('No pudimos consultar la ciudad.');
+
+        const geoData = await geoRes.json();
+        if (!geoData.results || !geoData.results.length) {
+          throw new Error('No encontramos esa ciudad. Prueba con otro nombre.');
+        }
+
+        return geoData.results[0];
+      }
+
+      async function getForecast(latitude, longitude) {
+        const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max&timezone=auto&forecast_days=3`;
+        const forecastRes = await fetch(forecastUrl);
+        if (!forecastRes.ok) throw new Error('No pudimos obtener el pronóstico.');
+
+        const forecastData = await forecastRes.json();
+        if (!forecastData.daily) throw new Error('El pronóstico no trae datos diarios.');
+
+        return forecastData.daily;
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const city = cityInput.value.trim();
+        if (!city) return;
+
+        submitButton.disabled = true;
+        statusEl.textContent = 'Consultando pronóstico...';
+        resultsEl.innerHTML = '';
+
+        try {
+          const place = await getCoordinates(city);
+          const daily = await getForecast(place.latitude, place.longitude);
+          const cityLabel = `${place.name}${place.country ? ', ' + place.country : ''}`;
+
+          renderCards(cityLabel, daily);
+          statusEl.textContent = `Listo. Sugerencias para ${cityLabel}.`;
+        } catch (error) {
+          statusEl.textContent = error.message;
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+    </script>
   </body>
 </html>
